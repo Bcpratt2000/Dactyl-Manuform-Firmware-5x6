@@ -14,6 +14,7 @@ int currentState[4][8];
 //                   {0, 0, 0, 0, 0, 0, 0, 0};
 void setup() {
   // put your setup code here, to run once:
+  TinyUSB_Device_Init(0);
 }
 
 void loop() {
