@@ -1,22 +1,46 @@
 #include <Arduino.h>
 // #include "PluggableUSBHID.h"
 // #include "USBKeyboard.h"
-#include "Adafruit_TinyUSB.h"
+#include <PluggableUSBHID.h>
+#include <USBHID_Types.h>
+#include <USBKeyboard.h>
 
-#define SIDE 0 //0 is left, 1 is right
+USBKeyboard keyboard;
 
-int lastState[4][8];
-int currentState[4][8];
+#define LED 25
 
-// int Keymap[4][8] ={0, 0, 0, 0, 0, 0, 0, 0},
-//                   {0, 0, 0, 0, 0, 0, 0, 0},
-//                   {0, 0, 0, 0, 0, 0, 0, 0},
-//                   {0, 0, 0, 0, 0, 0, 0, 0};
-void setup() {
-  // put your setup code here, to run once:
-  TinyUSB_Device_Init(0);
-}
+// Is this compiled for the left half or the right half
+//  #define LEFT
+#define RIGHT
 
+// define history of keypresses
+int lastState[6][6];
+int currentState[6][6];
+
+// Define Keymaps
+#ifdef LEFT
+int Keymap[6][6] = {{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};
+#endif
+#ifdef RIGHT
+int Keymap[6][6] = {{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};
+#endif
+
+
+void setup() {}
+
+// Entry Point
 void loop() {
-  // put your main code here, to run repeatedly:
+  pinMode(LED, OUTPUT);
+
+  delay(5000);
+  keyboard.printf("Hello World\r\n");
+
+  while (1) {
+    digitalWrite(LED, true);
+    delay(1000);
+    digitalWrite(LED, false);
+    delay(1000);
+  }
 }
