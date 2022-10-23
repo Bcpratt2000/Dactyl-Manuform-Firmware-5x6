@@ -4,15 +4,19 @@
 #include <USBKeyboard.h>
 
 USBKeyboard keyboard;
-
+enum ADDITIONAL_KEY{
+  KEY_ESC = 27
+};
 #define LED 25
-#define SLEW_US 10 // time is microseconds to wait between setting the pin voltage to high and reading the output value
+#define SLEW_US 10  // time is microseconds to wait between setting the pin
+                    // voltage to high
+                    // and reading the output value
 
 // Is this compiled for the left half or the right half
 //  #define LEFT
 #define RIGHT
 
-//define the size of the keyboard
+// define the size of the keyboard
 #define MATRIX_HEIGHT 6
 #define MATRIX_WIDTH 6
 
@@ -20,14 +24,14 @@ USBKeyboard keyboard;
 bool lastState[MATRIX_WIDTH][MATRIX_HEIGHT];
 bool currentState[MATRIX_WIDTH][MATRIX_HEIGHT];
 
-//define the pins used for the key matrix
+// define the pins used for the key matrix
 short outputPins[MATRIX_HEIGHT] = {0, 1, 2, 3, 4, 5};
 short inputPins[MATRIX_WIDTH] = {6, 7, 8, 9, 10, 11};
 
 // Define Keymaps
 #ifdef LEFT
 short Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
-    {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
+    {KEY_ESC, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};
 #endif
 #ifdef RIGHT
