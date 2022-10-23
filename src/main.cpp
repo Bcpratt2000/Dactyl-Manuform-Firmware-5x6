@@ -41,7 +41,7 @@ short Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
 #ifdef RIGHT
 short Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
     {'6', '7', '8', '9', '0', KEY_BACKSPACE}, {'y', 'u', 'i', 'o', 'p', '-'}, {'h', 'j', 'k', 'l', ';', '\''},
-    {'n', 'm', ',', '.', '/', '\\'}, {0, 0, KEY_SPACE, KEY_ENTER, '=', '-'}, {0, 0, 0, 0, 0, 0}};
+    {'n', 'm', ',', '.', '/', '\\'}, {0, 0, KEY_SPACE, KEY_BACKSPACE, '=', '-'}, {0, 0, 0, 0, 0, 0}};
 #endif
 
 void setup() {
