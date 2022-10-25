@@ -12,7 +12,7 @@ enum ADDITIONAL_KEY{
   KEY_SPACE = 23
 };
 #define LED 25
-#define SLEW_US 10  // time is microseconds to wait between setting the pin
+#define SLEW_US 1  // time is microseconds to wait between setting the pin
                     // voltage to high
                     // and reading the output value
 
