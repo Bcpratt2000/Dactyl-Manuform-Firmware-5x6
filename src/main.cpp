@@ -117,9 +117,9 @@ enum KEYS {
 #define LED 25
 #define MAX_KEYS 6  // maximum number of keys pressed at once
 #define SLEW_US \
-  1  // time is microseconds to wait between setting the pin
-     // voltage to high
-     // and reading the output value
+  10  // time is microseconds to wait between setting the pin
+      // voltage to high
+      // and reading the output value
 
 // Is this compiled for the left half or the right half
 // #define LEFT
@@ -195,6 +195,10 @@ void loop() {
   keysPressed = 0;
   modifier = 0;
 
+  // keyboard.wait_ready();
+
+  delay(1000);
+
   // loop through button matrix and fill the list of keys pressed
   for (int i = 0; i < MATRIX_WIDTH; i++) {
     digitalWrite(outputPins[i], HIGH);
@@ -202,21 +206,21 @@ void loop() {
     for (int j = 0; j < MATRIX_HEIGHT; j++) {
       if (digitalRead(outputPins[j])) {
         if (Keymap[i][j] == KEY_CTRL) {
-          modifier = modifier | 0x10000000;
+          modifier |= 1;
         } else if (Keymap[i][j] == KEYS::KEY_LSHIFT) {
-          modifier = modifier | 0x01000000;
+          modifier |= 1 << 1;
         } else if (Keymap[i][j] == KEYS::KEY_LALT) {
-          modifier = modifier | 0x00100000;
+          modifier |= 1 << 2;
         } else if (Keymap[i][j] == KEYS::KEY_LLOGO) {
-          modifier = modifier | 0x00010000;
+          modifier |= 1 << 3;
         } else if (Keymap[i][j] == KEYS::KEY_RCTRL) {
-          modifier = modifier | 0x00001000;
+          modifier |= 1 << 4;
         } else if (Keymap[i][j] == KEYS::KEY_RSHIFT) {
-          modifier = modifier | 0x00000100;
+          modifier |= 1 << 5;
         } else if (Keymap[i][j] == KEYS::KEY_RALT) {
-          modifier = modifier | 0x00000010;
+          modifier |= 1 << 6;
         } else if (Keymap[i][j] == KEYS::KEY_RLOGO) {
-          modifier = modifier | 0x00000001;
+          modifier |= 1 << 7;
         } else {
           if (keysPressed < MAX_KEYS) {
             keyList[keysPressed] = Keymap[i][j];
