@@ -117,13 +117,13 @@ enum KEYS {
 #define LED 25
 #define MAX_KEYS 6  // maximum number of keys pressed at once
 #define SLEW_US \
-  10  // time is microseconds to wait between setting the pin
+  1  // time is microseconds to wait between setting the pin
       // voltage to high
       // and reading the output value
 
 // Is this compiled for the left half or the right half
-// #define LEFT
-#define RIGHT
+#define LEFT
+// #define RIGHT
 
 // define the size of the keyboard
 #define MATRIX_HEIGHT 6
@@ -181,8 +181,11 @@ void setup() {
     pinMode(inputPins[i], INPUT_PULLDOWN);
   }
 
-  // delay(5000);
-  // keyboard.printf("Hello World\r\n");
+  //wait for keyboard ready
+  digitalWrite(LED, HIGH);
+  delay(1000);
+  digitalWrite(LED, LOW);
+
 }
 
 // Entry Point
@@ -195,16 +198,23 @@ void loop() {
   keysPressed = 0;
   modifier = 0;
 
-  // keyboard.wait_ready();
+  
 
-  delay(1000);
+
+  // keyList[0] = KEYS::KEY_K;
+  // sendKeys(modifier, keyList);
+  // sendKeys(modifier, keyList);
+  // keyList[0] = 0;
+  // sendKeys(modifier, keyList);
+
+  // while(1){}
 
   // loop through button matrix and fill the list of keys pressed
   for (int i = 0; i < MATRIX_WIDTH; i++) {
     digitalWrite(outputPins[i], HIGH);
     delayMicroseconds(SLEW_US);
     for (int j = 0; j < MATRIX_HEIGHT; j++) {
-      if (digitalRead(outputPins[j])) {
+      if (digitalRead(inputPins[j]) == HIGH) {
         if (Keymap[i][j] == KEY_CTRL) {
           modifier |= 1;
         } else if (Keymap[i][j] == KEYS::KEY_LSHIFT) {
@@ -230,6 +240,12 @@ void loop() {
       }
     }
     digitalWrite(outputPins[i], LOW);
+  }
+
+  if(keysPressed){
+    digitalWrite(LED, HIGH);
+  } else {
+    digitalWrite(LED, LOW);
   }
   sendKeys(modifier, keyList);
 }
