@@ -122,8 +122,8 @@ enum KEYS {
       // and reading the output value
 
 // Is this compiled for the left half or the right half
-#define LEFT
-// #define RIGHT
+// #define LEFT
+#define RIGHT
 
 // define the size of the keyboard
 #define MATRIX_HEIGHT 6
@@ -133,8 +133,8 @@ enum KEYS {
 bool currentState[MATRIX_WIDTH][MATRIX_HEIGHT];
 
 // define the pins used for the key matrix
-uint8_t outputPins[MATRIX_HEIGHT] = {2, 3, 4, 5, 6, 7};
-uint8_t inputPins[MATRIX_WIDTH] = {8, 9, 10, 11, 12, 13};
+uint8_t inputPins[MATRIX_HEIGHT] = {2, 3, 4, 5, 6, 7};
+uint8_t outputPins[MATRIX_WIDTH] = {8, 9, 10, 11, 12, 13};
 
 uint8_t keyList[MAX_KEYS];
 uint8_t keysPressed = 0;
@@ -165,9 +165,9 @@ uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
      KEYS::KEY_QUOTE},
     {KEYS::KEY_N, KEYS::KEY_M, KEYS::KEY_COMMA, KEYS::KEY_PERIOD,
      KEYS::KEY_FORWARDSLASH, KEYS::KEY_BACKSLASH},
-    {0, 0, KEYS::KEY_SPACE, KEYS::KEY_BACKSPACE, KEYS::KEY_EQUAL,
-     KEYS::KEY_MINUS},
-    {0, 0, 0, 0, 0, 0}};
+    {0, KEYS::KEY_SPACE, KEYS::KEY_EQUAL,
+     KEYS::KEY_MINUS, 0, 0},
+    {0, 0, 0, KEYS::KEY_BACKSPACE, 0, 0}};
 #endif
 
 void setup() {
@@ -199,16 +199,6 @@ void loop() {
   modifier = 0;
 
   
-
-
-  // keyList[0] = KEYS::KEY_K;
-  // sendKeys(modifier, keyList);
-  // sendKeys(modifier, keyList);
-  // keyList[0] = 0;
-  // sendKeys(modifier, keyList);
-
-  // while(1){}
-
   // loop through button matrix and fill the list of keys pressed
   for (int i = 0; i < MATRIX_WIDTH; i++) {
     digitalWrite(outputPins[i], HIGH);
