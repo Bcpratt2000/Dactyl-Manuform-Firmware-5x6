@@ -117,7 +117,7 @@ enum KEYS {
 #define LED 25
 #define MAX_KEYS 6  // maximum number of keys pressed at once
 #define SLEW_US \
-  1  // time is microseconds to wait between setting the pin
+  5  // time is microseconds to wait between setting the pin
       // voltage to high
       // and reading the output value
 
