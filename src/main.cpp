@@ -147,27 +147,26 @@ uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
      KEYS::KEY_5},
     {KEYS::KEY_TAB, KEYS::KEY_Q, KEYS::KEY_W, KEYS::KEY_E, KEYS::KEY_R,
      KEYS::KEY_T},
-    {KEYS::KEY_LSHIFT, KEYS::KEY_A, KEYS::KEY_S, KEYS::KEY_D, KEYS::KEY_F,
+    {KEYS::KEY_PAGEUP, KEYS::KEY_A, KEYS::KEY_S, KEYS::KEY_D, KEYS::KEY_F,
      KEYS::KEY_G},
-    {KEYS::KEY_LCTRL, KEYS::KEY_Z, KEYS::KEY_X, KEYS::KEY_C, KEYS::KEY_V,
+    {KEYS::KEY_PAGEDOWN, KEYS::KEY_Z, KEYS::KEY_X, KEYS::KEY_C, KEYS::KEY_V,
      KEYS::KEY_B},
-    {KEYS::KEY_LBRACE, KEYS::KEY_RBRACE, KEYS::KEY_ENTER, KEYS::KEY_SPACE, 0,
-     0},
-    {0, 0, 0, 0, 0, 0}};
+    {0, 0, KEYS::KEY_LBRACE, KEYS::KEY_RBRACE, KEYS::KEY_SPACE, KEYS::KEY_LSHIFT},
+    {0, 0, KEYS::KEY_ENTER, KEYS::KEY_LCTRL, KEYS::KEY_LALT, KEYS::KEY_LLOGO}};
 #endif
 #ifdef RIGHT
 uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
     {KEYS::KEY_6, KEYS::KEY_7, KEYS::KEY_8, KEYS::KEY_9, KEYS::KEY_0,
-     KEY_BACKSPACE},
+     KEY_DELETE},
     {KEYS::KEY_Y, KEYS::KEY_U, KEYS::KEY_I, KEYS::KEY_O, KEYS::KEY_P,
      KEYS::KEY_MINUS},
     {KEYS::KEY_H, KEYS::KEY_J, KEYS::KEY_K, KEYS::KEY_L, KEYS::KEY_SEMICOLON,
      KEYS::KEY_QUOTE},
     {KEYS::KEY_N, KEYS::KEY_M, KEYS::KEY_COMMA, KEYS::KEY_PERIOD,
      KEYS::KEY_FORWARDSLASH, KEYS::KEY_BACKSLASH},
-    {0, KEYS::KEY_SPACE, KEYS::KEY_EQUAL,
-     KEYS::KEY_MINUS, 0, 0},
-    {0, 0, 0, KEYS::KEY_BACKSPACE, 0, 0}};
+    {KEYS::KEY_DELETE, KEYS::KEY_SPACE, KEYS::KEY_MINUS,
+     KEYS::KEY_EQUAL, 0, 0},
+    {KEYS::KEY_END, KEYS::KEY_HOME, 0, KEYS::KEY_BACKSPACE, 0, 0}};
 #endif
 
 void setup() {
@@ -205,7 +204,7 @@ void loop() {
     delayMicroseconds(SLEW_US);
     for (int j = 0; j < MATRIX_HEIGHT; j++) {
       if (digitalRead(inputPins[j]) == HIGH) {
-        if (Keymap[i][j] == KEY_CTRL) {
+        if (Keymap[i][j] == KEYS::KEY_LCTRL) {
           modifier |= 1;
         } else if (Keymap[i][j] == KEYS::KEY_LSHIFT) {
           modifier |= 1 << 1;
