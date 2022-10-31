@@ -117,9 +117,10 @@ enum KEYS {
 #define LED 25
 #define MAX_KEYS 6  // maximum number of keys pressed at once
 #define SLEW_US \
-  5  // time is microseconds to wait between setting the pin
+  1  // time is microseconds to wait between setting the pin
       // voltage to high
       // and reading the output value
+#define DEBOUNCE_US 5//debounce time for combating false button presses
 
 // Is this compiled for the left half or the right half
 // #define LEFT
@@ -136,6 +137,7 @@ bool currentState[MATRIX_WIDTH][MATRIX_HEIGHT];
 uint8_t inputPins[MATRIX_HEIGHT] = {2, 3, 4, 5, 6, 7};
 uint8_t outputPins[MATRIX_WIDTH] = {8, 9, 10, 11, 12, 13};
 
+uint8_t debounceFirstCheckPresses[MATRIX_WIDTH][MATRIX_HEIGHT];
 uint8_t keyList[MAX_KEYS];
 uint8_t keysPressed = 0;
 uint8_t modifier = 0;
@@ -193,43 +195,59 @@ void loop() {
   for (int i = 0; i < MAX_KEYS; i++) {
     keyList[i] = 0;
   }
+  for (int i = 0; i < MATRIX_WIDTH; i++) {
+    for (int j = 0; j < MATRIX_HEIGHT; j++) {
+      debounceFirstCheckPresses[i][j] = 0;
+    }
+  }
   // zero counter of keys pressed and modifier bitmask
   keysPressed = 0;
   modifier = 0;
 
   
   // loop through button matrix and fill the list of keys pressed
-  for (int i = 0; i < MATRIX_WIDTH; i++) {
+  // for (int i = 0; i < MATRIX_WIDTH; i++) {
+  //   digitalWrite(outputPins[i], HIGH);
+  //   delayMicroseconds(SLEW_US);
+  //   for (int j = 0; j < MATRIX_HEIGHT; j++) {
+  //     if (digitalRead(inputPins[j]) == HIGH) {
+  //       if (Keymap[i][j] == KEYS::KEY_LCTRL) {
+  //         modifier |= 1;
+  //       } else if (Keymap[i][j] == KEYS::KEY_LSHIFT) {
+  //         modifier |= 1 << 1;
+  //       } else if (Keymap[i][j] == KEYS::KEY_LALT) {
+  //         modifier |= 1 << 2;
+  //       } else if (Keymap[i][j] == KEYS::KEY_LLOGO) {
+  //         modifier |= 1 << 3;
+  //       } else if (Keymap[i][j] == KEYS::KEY_RCTRL) {
+  //         modifier |= 1 << 4;
+  //       } else if (Keymap[i][j] == KEYS::KEY_RSHIFT) {
+  //         modifier |= 1 << 5;
+  //       } else if (Keymap[i][j] == KEYS::KEY_RALT) {
+  //         modifier |= 1 << 6;
+  //       } else if (Keymap[i][j] == KEYS::KEY_RLOGO) {
+  //         modifier |= 1 << 7;
+  //       } else {
+  //         if (keysPressed < MAX_KEYS) {
+  //           keyList[keysPressed] = Keymap[i][j];
+  //           keysPressed++;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   digitalWrite(outputPins[i], LOW);
+  // }
+
+for (int i = 0; i < MATRIX_WIDTH; i++) {
     digitalWrite(outputPins[i], HIGH);
     delayMicroseconds(SLEW_US);
     for (int j = 0; j < MATRIX_HEIGHT; j++) {
       if (digitalRead(inputPins[j]) == HIGH) {
-        if (Keymap[i][j] == KEYS::KEY_LCTRL) {
-          modifier |= 1;
-        } else if (Keymap[i][j] == KEYS::KEY_LSHIFT) {
-          modifier |= 1 << 1;
-        } else if (Keymap[i][j] == KEYS::KEY_LALT) {
-          modifier |= 1 << 2;
-        } else if (Keymap[i][j] == KEYS::KEY_LLOGO) {
-          modifier |= 1 << 3;
-        } else if (Keymap[i][j] == KEYS::KEY_RCTRL) {
-          modifier |= 1 << 4;
-        } else if (Keymap[i][j] == KEYS::KEY_RSHIFT) {
-          modifier |= 1 << 5;
-        } else if (Keymap[i][j] == KEYS::KEY_RALT) {
-          modifier |= 1 << 6;
-        } else if (Keymap[i][j] == KEYS::KEY_RLOGO) {
-          modifier |= 1 << 7;
-        } else {
-          if (keysPressed < MAX_KEYS) {
-            keyList[keysPressed] = Keymap[i][j];
-            keysPressed++;
-          }
-        }
+        debounceFirstCheckPresses[i][j] = 1;
       }
     }
     digitalWrite(outputPins[i], LOW);
-  }
+}
 
   if(keysPressed){
     digitalWrite(LED, HIGH);
