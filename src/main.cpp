@@ -5,6 +5,7 @@
 
 USBKeyboard keyboard;
 void sendKeys(uint8_t modifier, uint8_t* keys);
+
 enum KEYS {
   KEY_A = 4,
   KEY_B,
@@ -191,18 +192,16 @@ void setup() {
 
 // Entry Point
 void loop() {
+
   // zero keys pressed array
   for (int i = 0; i < MAX_KEYS; i++) {
     keyList[i] = 0;
   }
-  for (int i = 0; i < MATRIX_WIDTH; i++) {
-    for (int j = 0; j < MATRIX_HEIGHT; j++) {
-      debounceFirstCheckPresses[i][j] = 0;
-    }
-  }
+
   // zero counter of keys pressed and modifier bitmask
   keysPressed = 0;
   modifier = 0;
+
 
   
   // loop through button matrix and fill the list of keys pressed
@@ -238,16 +237,53 @@ void loop() {
   //   digitalWrite(outputPins[i], LOW);
   // }
 
+//loop through button array and send the button presses to the next part through the debounceFirstCheckPresses array
 for (int i = 0; i < MATRIX_WIDTH; i++) {
     digitalWrite(outputPins[i], HIGH);
     delayMicroseconds(SLEW_US);
     for (int j = 0; j < MATRIX_HEIGHT; j++) {
       if (digitalRead(inputPins[j]) == HIGH) {
         debounceFirstCheckPresses[i][j] = 1;
+      } else{
+        debounceFirstCheckPresses[i][j] = 0;
       }
     }
     digitalWrite(outputPins[i], LOW);
 }
+
+delayMicroseconds(DEBOUNCE_US);
+  // loop through the debounce matrix and trigger the actual button presses
+  for (int i = 0; i < MATRIX_WIDTH; i++) {
+    digitalWrite(outputPins[i], HIGH);
+    delayMicroseconds(SLEW_US);
+    for (int j = 0; j < MATRIX_HEIGHT; j++) {
+      if (digitalRead(inputPins[j]) && debounceFirstCheckPresses[i][j]) {
+        if (Keymap[i][j] == KEYS::KEY_LCTRL) {
+          modifier |= 1;
+        } else if (Keymap[i][j] == KEYS::KEY_LSHIFT) {
+          modifier |= 1 << 1;
+        } else if (Keymap[i][j] == KEYS::KEY_LALT) {
+          modifier |= 1 << 2;
+        } else if (Keymap[i][j] == KEYS::KEY_LLOGO) {
+          modifier |= 1 << 3;
+        } else if (Keymap[i][j] == KEYS::KEY_RCTRL) {
+          modifier |= 1 << 4;
+        } else if (Keymap[i][j] == KEYS::KEY_RSHIFT) {
+          modifier |= 1 << 5;
+        } else if (Keymap[i][j] == KEYS::KEY_RALT) {
+          modifier |= 1 << 6;
+        } else if (Keymap[i][j] == KEYS::KEY_RLOGO) {
+          modifier |= 1 << 7;
+        } else {
+          if (keysPressed < MAX_KEYS) {
+            keyList[keysPressed] = Keymap[i][j];
+            keysPressed++;
+          }
+        }
+      }
+    }
+    digitalWrite(outputPins[i], LOW);
+  }
 
   if(keysPressed){
     digitalWrite(LED, HIGH);
@@ -256,6 +292,9 @@ for (int i = 0; i < MATRIX_WIDTH; i++) {
   }
   sendKeys(modifier, keyList);
 }
+
+
+
 
 void sendKeys(uint8_t modifier, uint8_t* keys) {
   HID_REPORT report;
