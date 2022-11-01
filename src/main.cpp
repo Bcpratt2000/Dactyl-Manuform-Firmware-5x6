@@ -21,8 +21,8 @@ void sendKeys(uint8_t modifier, uint8_t* keys);
 #define DEBOUNCE_US 100  // debounce time for combating false button presses
 
 // Is this compiled for the left half or the right half
-#define LEFT
-// #define RIGHT
+// #define LEFT
+#define RIGHT
 
 // define the size of the keyboard
 #define MATRIX_HEIGHT 6
@@ -54,6 +54,23 @@ uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
     {0, 0, KEYS::KEY_LBRACE, KEYS::KEY_RBRACE, KEYS::KEY_SPACE,
      KEYS::KEY_LSHIFT},
     {0, 0, KEYS::KEY_ENTER, KEYS::KEY_LCTRL, KEYS::KEY_LALT, KEYS::KEY_LLOGO}};
+
+uint8_t Keymap_Layer_Up[MATRIX_WIDTH][MATRIX_HEIGHT] = {
+    {KEYS::KEY_TILDE, KEYS::KEY_F1, KEYS::KEY_F2, KEYS::KEY_F3, KEYS::KEY_F4, KEYS::KEY_F5},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0}};
+
+uint8_t Keymap_Layer_Down[MATRIX_WIDTH][MATRIX_HEIGHT] = {
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0}};
+    
 #endif
 #ifdef RIGHT
 uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
@@ -66,7 +83,23 @@ uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
     {KEYS::KEY_N, KEYS::KEY_M, KEYS::KEY_COMMA, KEYS::KEY_PERIOD,
      KEYS::KEY_FORWARDSLASH, KEYS::KEY_BACKSLASH},
     {KEYS::KEY_DELETE, KEYS::KEY_SPACE, KEYS::KEY_MINUS, KEYS::KEY_EQUAL, 0, 0},
-    {KEYS::KEY_END, KEYS::KEY_HOME, 0, KEYS::KEY_BACKSPACE, 0, 0}};
+    {KEYS::KEY_END, KEYS::KEY_HOME, KEYS::LAYER_UP, KEYS::KEY_BACKSPACE, 0, 0}};
+
+uint8_t Keymap_Layer_Up[MATRIX_WIDTH][MATRIX_HEIGHT] = {
+    {KEYS::KEY_F6, KEYS::KEY_F7, KEYS::KEY_F8, KEYS::KEY_F9, KEYS::KEY_F10, KEYS::KEY_F11},
+    {0, 0, 0, 0, 0, 0},
+    {KEYS::KEY_LEFTARROW, KEYS::KEY_DOWNARROW, KEYS::KEY_UPARROW, KEYS::KEY_RIGHTARROW, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0}};
+
+uint8_t Keymap_Layer_Down[MATRIX_WIDTH][MATRIX_HEIGHT] = {
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0}};
 #endif
 
 void setup() {
