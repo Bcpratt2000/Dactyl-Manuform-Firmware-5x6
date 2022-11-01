@@ -4,23 +4,21 @@
 #include <USBKeyboard.h>
 
 // #ifndef KEYS
-// #include "KEYS.h"
+#include "KEYS.h"
 // #endif
 
 #include "I2CKeyboard.h"
 
-
-I2CKeyboard keyboard;
+I2CKeyboard keyboard(115200);
 void sendKeys(uint8_t modifier, uint8_t* keys);
-
 
 #define LED 25
 #define MAX_KEYS 6  // maximum number of keys pressed at once
 #define SLEW_US \
-  3  // time is microseconds to wait between setting the pin
-      // voltage to high
-      // and reading the output value
-#define DEBOUNCE_US 100 //debounce time for combating false button presses
+  3                      // time is microseconds to wait between setting the pin
+                         // voltage to high
+                         // and reading the output value
+#define DEBOUNCE_US 100  // debounce time for combating false button presses
 
 // Is this compiled for the left half or the right half
 #define LEFT
@@ -53,7 +51,8 @@ uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
      KEYS::KEY_G},
     {KEYS::KEY_PAGEDOWN, KEYS::KEY_Z, KEYS::KEY_X, KEYS::KEY_C, KEYS::KEY_V,
      KEYS::KEY_B},
-    {0, 0, KEYS::KEY_LBRACE, KEYS::KEY_RBRACE, KEYS::KEY_SPACE, KEYS::KEY_LSHIFT},
+    {0, 0, KEYS::KEY_LBRACE, KEYS::KEY_RBRACE, KEYS::KEY_SPACE,
+     KEYS::KEY_LSHIFT},
     {0, 0, KEYS::KEY_ENTER, KEYS::KEY_LCTRL, KEYS::KEY_LALT, KEYS::KEY_LLOGO}};
 #endif
 #ifdef RIGHT
@@ -66,8 +65,7 @@ uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
      KEYS::KEY_QUOTE},
     {KEYS::KEY_N, KEYS::KEY_M, KEYS::KEY_COMMA, KEYS::KEY_PERIOD,
      KEYS::KEY_FORWARDSLASH, KEYS::KEY_BACKSLASH},
-    {KEYS::KEY_DELETE, KEYS::KEY_SPACE, KEYS::KEY_MINUS,
-     KEYS::KEY_EQUAL, 0, 0},
+    {KEYS::KEY_DELETE, KEYS::KEY_SPACE, KEYS::KEY_MINUS, KEYS::KEY_EQUAL, 0, 0},
     {KEYS::KEY_END, KEYS::KEY_HOME, 0, KEYS::KEY_BACKSPACE, 0, 0}};
 #endif
 
@@ -82,16 +80,14 @@ void setup() {
     pinMode(inputPins[i], INPUT_PULLDOWN);
   }
 
-  //wait for keyboard ready
+  // wait for keyboard ready
   digitalWrite(LED, HIGH);
   delay(1000);
   digitalWrite(LED, LOW);
-
 }
 
 // Entry Point
 void loop() {
-
   // zero keys pressed array
   for (int i = 0; i < MAX_KEYS; i++) {
     keyList[i] = 0;
@@ -101,8 +97,6 @@ void loop() {
   keysPressed = 0;
   modifier = 0;
 
-
-  
   // loop through button matrix and fill the list of keys pressed
   // for (int i = 0; i < MATRIX_WIDTH; i++) {
   //   digitalWrite(outputPins[i], HIGH);
@@ -136,21 +130,22 @@ void loop() {
   //   digitalWrite(outputPins[i], LOW);
   // }
 
-//loop through button array and send the button presses to the next part through the debounceFirstCheckPresses array
-for (int i = 0; i < MATRIX_WIDTH; i++) {
+  // loop through button array and send the button presses to the next part
+  // through the debounceFirstCheckPresses array
+  for (int i = 0; i < MATRIX_WIDTH; i++) {
     digitalWrite(outputPins[i], HIGH);
     delayMicroseconds(SLEW_US);
     for (int j = 0; j < MATRIX_HEIGHT; j++) {
       if (digitalRead(inputPins[j]) == HIGH) {
         debounceFirstCheckPresses[i][j] = 1;
-      } else{
+      } else {
         debounceFirstCheckPresses[i][j] = 0;
       }
     }
     digitalWrite(outputPins[i], LOW);
-}
+  }
 
-delayMicroseconds(DEBOUNCE_US);
+  delayMicroseconds(DEBOUNCE_US);
   // loop through the debounce matrix and trigger the actual button presses
   for (int i = 0; i < MATRIX_WIDTH; i++) {
     digitalWrite(outputPins[i], HIGH);
@@ -184,16 +179,13 @@ delayMicroseconds(DEBOUNCE_US);
     digitalWrite(outputPins[i], LOW);
   }
 
-  if(keysPressed){
+  if (keysPressed) {
     digitalWrite(LED, HIGH);
   } else {
     digitalWrite(LED, LOW);
   }
   keyboard.sendKeys(modifier, keyList);
 }
-
-
-
 
 // void sendKeys(uint8_t modifier, uint8_t* keys) {
 //   HID_REPORT report;

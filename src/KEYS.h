@@ -1,3 +1,5 @@
+#pragma once
+
 enum KEYS {
   KEY_A = 4,
   KEY_B,
