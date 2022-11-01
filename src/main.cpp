@@ -2,23 +2,29 @@
 #include <PluggableUSBHID.h>
 #include <USBHID_Types.h>
 #include <USBKeyboard.h>
-#include "KEYS.h"
 
-USBKeyboard keyboard;
+// #ifndef KEYS
+// #include "KEYS.h"
+// #endif
+
+#include "I2CKeyboard.h"
+
+
+I2CKeyboard keyboard;
 void sendKeys(uint8_t modifier, uint8_t* keys);
 
 
 #define LED 25
 #define MAX_KEYS 6  // maximum number of keys pressed at once
 #define SLEW_US \
-  1  // time is microseconds to wait between setting the pin
+  3  // time is microseconds to wait between setting the pin
       // voltage to high
       // and reading the output value
-#define DEBOUNCE_US 5 //debounce time for combating false button presses
+#define DEBOUNCE_US 100 //debounce time for combating false button presses
 
 // Is this compiled for the left half or the right half
-// #define LEFT
-#define RIGHT
+#define LEFT
+// #define RIGHT
 
 // define the size of the keyboard
 #define MATRIX_HEIGHT 6
@@ -183,23 +189,23 @@ delayMicroseconds(DEBOUNCE_US);
   } else {
     digitalWrite(LED, LOW);
   }
-  sendKeys(modifier, keyList);
+  keyboard.sendKeys(modifier, keyList);
 }
 
 
 
 
-void sendKeys(uint8_t modifier, uint8_t* keys) {
-  HID_REPORT report;
-  report.data[0] = 1;
-  report.data[1] = modifier;
-  report.data[2] = 0;
+// void sendKeys(uint8_t modifier, uint8_t* keys) {
+//   HID_REPORT report;
+//   report.data[0] = 1;
+//   report.data[1] = modifier;
+//   report.data[2] = 0;
 
-  for (int i = 0; i < MAX_KEYS; i++) {
-    report.data[3 + i] = keys[i];
-  }
+//   for (int i = 0; i < MAX_KEYS; i++) {
+//     report.data[3 + i] = keys[i];
+//   }
 
-  report.length = 3 + MAX_KEYS;
+//   report.length = 3 + MAX_KEYS;
 
-  keyboard.send(&report);
-}
+//   keyboard.send(&report);
+// }
