@@ -4,6 +4,7 @@
 
 I2CKeyboard::I2CKeyboard(unsigned int bitrate){
   // Wire.begin(bitrate);
+  
 }
 
 void I2CKeyboard::sendKeys(uint8_t modifier, uint8_t* keys) {

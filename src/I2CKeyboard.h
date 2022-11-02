@@ -18,4 +18,11 @@ class I2CKeyboard {
 
  private:
   USBKeyboard keyboard;
+
+  struct {
+    uint16_t uniqueIdentifier;
+    uint8_t address;
+    uint8_t modifier;
+    uint8_t keys[MAX_KEYS];
+  } i2cPeer;
 };
