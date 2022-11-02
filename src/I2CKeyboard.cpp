@@ -1,12 +1,28 @@
 #include "I2CKeyboard.h"
+// #include "pico/stdlib.h"
+#include "pico/multicore.h"
 
 #define MAX_KEYS 6  // maximum number of keys that can be pressed at once
 
-I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address){
+I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
   this->address = address;
-  // Wire.begin(bitrate);
-  
+
+  if (address = 1) {
+    // initalize own peer
+    peers[address].uniqueIdentifier = address;
+    peers[address].modifier = 0;
+    peers[address].isLayerDown = false;
+    peers[address].isLayerUp = false;
+    for (int i = 0; i < sizeof(peers[address].keys) / sizeof(int); i++) {
+      peers[address].keys[i] = 0;
+    }
+  }
+
+  // start I2C listerner on second core
+  // multicore_launch_core1(secondCoreListener);
 }
+
+static void secondCoreListener(){};
 
 void I2CKeyboard::sendKeys(uint8_t modifier, uint8_t* keys) {
   HID_REPORT report;

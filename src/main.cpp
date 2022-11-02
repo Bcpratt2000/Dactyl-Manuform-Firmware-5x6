@@ -148,18 +148,3 @@ void loop() {
   }
   keyboard.sendKeys(modifier, keyList);
 }
-
-// void sendKeys(uint8_t modifier, uint8_t* keys) {
-//   HID_REPORT report;
-//   report.data[0] = 1;
-//   report.data[1] = modifier;
-//   report.data[2] = 0;
-
-//   for (int i = 0; i < MAX_KEYS; i++) {
-//     report.data[3 + i] = keys[i];
-//   }
-
-//   report.length = 3 + MAX_KEYS;
-
-//   keyboard.send(&report);
-// }

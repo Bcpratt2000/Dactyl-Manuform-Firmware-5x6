@@ -8,22 +8,27 @@
 
 #include "KEYS.h"
 
-#define MAX_KEYS 6 //maximum number of keys that can be pressed at once
+#define MAX_KEYS 6  // maximum number of keys that can be pressed at once
 
 class I2CKeyboard {
  public:
   I2CKeyboard(unsigned int bitrate, uint8_t address);
   void sendKeys(uint8_t modifier, uint8_t* keys);
 
-
  private:
-  USBKeyboard keyboard;
-  uint8_t address;
-
-  struct {
+  struct i2cPeer {
     uint16_t uniqueIdentifier;
-    uint8_t address;
+    
+    bool isLayerUp;
+    bool isLayerDown;
+
     uint8_t modifier;
     uint8_t keys[MAX_KEYS];
-  } i2cPeer;
+  };
+
+  USBKeyboard keyboard;
+  uint8_t address;
+  i2cPeer peers[128];
+
+  static void secondCoreListener();
 };
