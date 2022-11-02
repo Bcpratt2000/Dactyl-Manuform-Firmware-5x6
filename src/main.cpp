@@ -3,13 +3,24 @@
 #include <USBHID_Types.h>
 #include <USBKeyboard.h>
 
-// #ifndef KEYS
 #include "KEYS.h"
-// #endif
-
 #include "I2CKeyboard.h"
 
-I2CKeyboard keyboard(115200);
+//Include the header file with all of the configuration options
+// #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Left.h"
+#include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Right.h"
+
+
+
+// define history of keypresses
+bool currentState[MATRIX_WIDTH][MATRIX_HEIGHT];
+
+uint8_t debounceFirstCheckPresses[MATRIX_WIDTH][MATRIX_HEIGHT];
+uint8_t keyList[MAX_KEYS];
+uint8_t keysPressed = 0;
+uint8_t modifier = 0;
+
+I2CKeyboard keyboard(115200, I2C_ADDRESS);
 void sendKeys(uint8_t modifier, uint8_t* keys);
 
 #define LED 25
@@ -19,88 +30,6 @@ void sendKeys(uint8_t modifier, uint8_t* keys);
                          // voltage to high
                          // and reading the output value
 #define DEBOUNCE_US 100  // debounce time for combating false button presses
-
-// Is this compiled for the left half or the right half
-// #define LEFT
-#define RIGHT
-
-// define the size of the keyboard
-#define MATRIX_HEIGHT 6
-#define MATRIX_WIDTH 6
-
-// define history of keypresses
-bool currentState[MATRIX_WIDTH][MATRIX_HEIGHT];
-
-// define the pins used for the key matrix
-uint8_t inputPins[MATRIX_HEIGHT] = {2, 3, 4, 5, 6, 7};
-uint8_t outputPins[MATRIX_WIDTH] = {8, 9, 10, 11, 12, 13};
-
-uint8_t debounceFirstCheckPresses[MATRIX_WIDTH][MATRIX_HEIGHT];
-uint8_t keyList[MAX_KEYS];
-uint8_t keysPressed = 0;
-uint8_t modifier = 0;
-
-// Define Keymaps
-#ifdef LEFT
-uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
-    {KEYS::KEY_ESC, KEYS::KEY_1, KEYS::KEY_2, KEYS::KEY_3, KEYS::KEY_4,
-     KEYS::KEY_5},
-    {KEYS::KEY_TAB, KEYS::KEY_Q, KEYS::KEY_W, KEYS::KEY_E, KEYS::KEY_R,
-     KEYS::KEY_T},
-    {KEYS::KEY_PAGEUP, KEYS::KEY_A, KEYS::KEY_S, KEYS::KEY_D, KEYS::KEY_F,
-     KEYS::KEY_G},
-    {KEYS::KEY_PAGEDOWN, KEYS::KEY_Z, KEYS::KEY_X, KEYS::KEY_C, KEYS::KEY_V,
-     KEYS::KEY_B},
-    {0, 0, KEYS::KEY_LBRACE, KEYS::KEY_RBRACE, KEYS::KEY_SPACE,
-     KEYS::KEY_LSHIFT},
-    {0, 0, KEYS::KEY_ENTER, KEYS::KEY_LCTRL, KEYS::KEY_LALT, KEYS::KEY_LLOGO}};
-
-uint8_t Keymap_Layer_Up[MATRIX_WIDTH][MATRIX_HEIGHT] = {
-    {KEYS::KEY_TILDE, KEYS::KEY_F1, KEYS::KEY_F2, KEYS::KEY_F3, KEYS::KEY_F4, KEYS::KEY_F5},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0}};
-
-uint8_t Keymap_Layer_Down[MATRIX_WIDTH][MATRIX_HEIGHT] = {
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0}};
-    
-#endif
-#ifdef RIGHT
-uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
-    {KEYS::KEY_6, KEYS::KEY_7, KEYS::KEY_8, KEYS::KEY_9, KEYS::KEY_0,
-     KEY_DELETE},
-    {KEYS::KEY_Y, KEYS::KEY_U, KEYS::KEY_I, KEYS::KEY_O, KEYS::KEY_P,
-     KEYS::KEY_MINUS},
-    {KEYS::KEY_H, KEYS::KEY_J, KEYS::KEY_K, KEYS::KEY_L, KEYS::KEY_SEMICOLON,
-     KEYS::KEY_QUOTE},
-    {KEYS::KEY_N, KEYS::KEY_M, KEYS::KEY_COMMA, KEYS::KEY_PERIOD,
-     KEYS::KEY_FORWARDSLASH, KEYS::KEY_BACKSLASH},
-    {KEYS::KEY_DELETE, KEYS::KEY_SPACE, KEYS::KEY_MINUS, KEYS::KEY_EQUAL, 0, 0},
-    {KEYS::KEY_END, KEYS::KEY_HOME, KEYS::LAYER_UP, KEYS::KEY_BACKSPACE, 0, 0}};
-
-uint8_t Keymap_Layer_Up[MATRIX_WIDTH][MATRIX_HEIGHT] = {
-    {KEYS::KEY_F6, KEYS::KEY_F7, KEYS::KEY_F8, KEYS::KEY_F9, KEYS::KEY_F10, KEYS::KEY_F11},
-    {0, 0, 0, 0, 0, 0},
-    {KEYS::KEY_LEFTARROW, KEYS::KEY_DOWNARROW, KEYS::KEY_UPARROW, KEYS::KEY_RIGHTARROW, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0}};
-
-uint8_t Keymap_Layer_Down[MATRIX_WIDTH][MATRIX_HEIGHT] = {
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0}};
-#endif
 
 void setup() {
   pinMode(LED, OUTPUT);

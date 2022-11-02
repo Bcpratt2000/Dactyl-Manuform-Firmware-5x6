@@ -2,7 +2,8 @@
 
 #define MAX_KEYS 6  // maximum number of keys that can be pressed at once
 
-I2CKeyboard::I2CKeyboard(unsigned int bitrate){
+I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address){
+  this->address = address;
   // Wire.begin(bitrate);
   
 }

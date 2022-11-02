@@ -12,12 +12,13 @@
 
 class I2CKeyboard {
  public:
-  I2CKeyboard(unsigned int bitrate);
+  I2CKeyboard(unsigned int bitrate, uint8_t address);
   void sendKeys(uint8_t modifier, uint8_t* keys);
 
 
  private:
   USBKeyboard keyboard;
+  uint8_t address;
 
   struct {
     uint16_t uniqueIdentifier;
