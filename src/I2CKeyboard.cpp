@@ -7,7 +7,7 @@
 I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
   this->address = address;
 
-  if (address = 1) {
+  if (address == 1) {
     // initalize own peer
     peers[address].uniqueIdentifier = address;
     peers[address].modifier = 0;
@@ -19,10 +19,10 @@ I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
   }
 
   // start I2C listerner on second core
-  // multicore_launch_core1(secondCoreListener);
+  multicore_launch_core1(secondCoreListener);
 }
 
-static void secondCoreListener(){};
+void secondCoreListener(){};
 
 void I2CKeyboard::sendKeys(uint8_t modifier, uint8_t* keys) {
   HID_REPORT report;

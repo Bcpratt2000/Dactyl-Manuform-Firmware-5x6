@@ -4,7 +4,8 @@
 #include <PluggableUSBHID.h>
 #include <USBHID_Types.h>
 #include <USBKeyboard.h>
-#include <Wire.h>
+// #include <Wire.h>
+#include <hardware/i2c.h>
 
 #include "KEYS.h"
 
@@ -30,5 +31,5 @@ class I2CKeyboard {
   uint8_t address;
   i2cPeer peers[128];
 
-  static void secondCoreListener();
+  void secondCoreListener();
 };
