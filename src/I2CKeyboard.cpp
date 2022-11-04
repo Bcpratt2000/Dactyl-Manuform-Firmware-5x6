@@ -6,6 +6,9 @@
 
 I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
   this->address = address;
+  
+  // Wire.setSCA(0);
+  // Wire.setSCL(1);
 
   if (address == 1) {
     // initalize own peer
@@ -19,7 +22,7 @@ I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
   }
 
   // start I2C listerner on second core
-  multicore_launch_core1(secondCoreListener);
+  // multicore_launch_core1(secondCoreListener);
 }
 
 void secondCoreListener(){};
