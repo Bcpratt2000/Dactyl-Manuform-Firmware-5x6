@@ -4,8 +4,8 @@
 #include <PluggableUSBHID.h>
 #include <USBHID_Types.h>
 #include <USBKeyboard.h>
-// #include <Wire.h>
-#include <hardware/i2c.h>
+#include <Wire.h>
+#include <pico/multicore.h>
 
 #include "KEYS.h"
 
@@ -17,9 +17,9 @@ class I2CKeyboard {
   void sendKeys(uint8_t modifier, uint8_t* keys);
 
  private:
-  struct i2cPeer {
+    struct i2cPeer {
     uint16_t uniqueIdentifier;
-    
+
     bool isLayerUp;
     bool isLayerDown;
 
@@ -31,5 +31,5 @@ class I2CKeyboard {
   uint8_t address;
   i2cPeer peers[128];
 
-  void secondCoreListener();
+  // void secondCoreListener();
 };
