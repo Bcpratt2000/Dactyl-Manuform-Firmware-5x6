@@ -11,10 +11,14 @@
 
 #define MAX_KEYS 6  // maximum number of keys that can be pressed at once
 
+#define PULLING_HZ 1000
+
 class I2CKeyboard {
  public:
   I2CKeyboard(unsigned int bitrate, uint8_t address);
   void sendKeys(uint8_t modifier, uint8_t* keys);
+  void periodic();
+  
 
  private:
     struct i2cPeer {
@@ -26,6 +30,9 @@ class I2CKeyboard {
     uint8_t modifier;
     uint8_t keys[MAX_KEYS];
   };
+
+  uint8_t modifier;
+  uint8_t keys[MAX_KEYS];
 
   USBKeyboard keyboard;
   uint8_t address;
