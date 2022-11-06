@@ -1,11 +1,7 @@
 #include <Arduino.h>
-// #include <PluggableUSBHID.h>
-// #include <USBHID_Types.h>
-#include <USBKeyboard.h>
-
 #include "I2CKeyboard.h"
 #include "KEYS.h"
-// #include "DirectKeyboard.h"
+#include "arduino/hid/Adafruit_USBD_HID.h"
 
 // Include the header file with all of the configuration options
 //  #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Left.h"
@@ -19,9 +15,14 @@ uint8_t keyList[MAX_KEYS];
 uint8_t keysPressed = 0;
 uint8_t modifier = 0;
 
+Adafruit_USBD_HID keyboard;
 // I2CKeyboard keyboard(115200, I2C_ADDRESS);
-USBKeyboard keyboard;
+// USBKeyboard keyboard;
 void sendKeys(uint8_t modifier, uint8_t* keys);
+
+uint8_t const desc_hid_report[] = {
+    TUD_HID_REPORT_DESC_KEYBOARD(),
+};
 
 #define LED 25
 #define MAX_KEYS 6  // maximum number of keys pressed at once
@@ -32,6 +33,15 @@ void sendKeys(uint8_t modifier, uint8_t* keys);
 #define DEBOUNCE_US 300  // debounce time for combating false button presses
 
 void setup() {
+  //TinyUSB requires to run this in order to allow the computer to reset the pico for uploading code
+  Serial.begin(115200);
+
+
+  keyboard.setPollInterval(2);
+  keyboard.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
+  // keyboard.setReportCallback(NULL, hid_report_callback);
+  keyboard.begin();
+
   pinMode(LED, OUTPUT);
 
   // set output and input pinmodes
@@ -118,16 +128,5 @@ void loop() {
 }
 
 void sendKeys(uint8_t modifier, uint8_t* keys) {
-  HID_REPORT report;
-  report.data[0] = 1;
-  report.data[1] = modifier;
-  report.data[2] = 0;
-
-  for (int i = 0; i < MAX_KEYS; i++) {
-    report.data[3 + i] = keys[i];
-  }
-
-  report.length = 3 + MAX_KEYS;
-
-  keyboard.send(&report);
+  keyboard.keyboardReport(0, modifier, keys);
 }

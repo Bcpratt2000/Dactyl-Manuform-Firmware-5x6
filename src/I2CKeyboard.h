@@ -1,11 +1,9 @@
 #pragma once
 
 #include <Arduino.h>
-#include <PluggableUSBHID.h>
-#include <USBHID_Types.h>
-#include <USBKeyboard.h>
 #include <Wire.h>
 #include <pico/multicore.h>
+#include "arduino/hid/Adafruit_USBD_HID.h"
 
 #include "KEYS.h"
 
@@ -31,12 +29,13 @@ class I2CKeyboard {
     uint8_t keys[MAX_KEYS];
   };
 
-  MbedI2C Wire0;
+
+  Adafruit_USBD_HID keyboard;
 
   uint8_t modifier;
   uint8_t keys[MAX_KEYS];
 
-  USBKeyboard keyboard;
+  // USBKeyboard keyboard;
   uint8_t address;
   i2cPeer peers[128];
 
