@@ -8,8 +8,8 @@
 // #include "DirectKeyboard.h"
 
 // Include the header file with all of the configuration options
- #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Left.h"
-// #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Right.h"
+//  #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Left.h"
+#include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Right.h"
 
 // define history of keypresses
 bool currentState[MATRIX_WIDTH][MATRIX_HEIGHT];
