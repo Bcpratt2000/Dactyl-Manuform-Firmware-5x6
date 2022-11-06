@@ -1,7 +1,9 @@
 #include "I2CKeyboard.h"
 
-I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
+I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) : Wire0(0, 1) {
   this->address = address;
+  Wire0.begin(address);
+  Wire0.setTimeout(10);
 
   if (address == 1) {
     // initalize own peer
@@ -19,9 +21,7 @@ I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
   // multicore_launch_core1(secondCoreListener);
 }
 void I2CKeyboard::periodic() {
-  MbedI2C Wire0(0, 1);
-  Wire0.begin(address);
-  Wire0.setTimeout(10);
+
 
   int key_cursor_incrementer = 0;
 
@@ -43,7 +43,7 @@ void I2CKeyboard::periodic() {
 
           report.data[1] = modifier | Wire0.read();
 
-          report.data[0] = 0;
+          report.data[2] = 0;
           Wire0.read();
 
           for (int i=0; i<MAX_KEYS; i++){

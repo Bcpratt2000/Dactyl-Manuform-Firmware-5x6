@@ -31,6 +31,8 @@ class I2CKeyboard {
     uint8_t keys[MAX_KEYS];
   };
 
+  MbedI2C Wire0;
+
   uint8_t modifier;
   uint8_t keys[MAX_KEYS];
 
