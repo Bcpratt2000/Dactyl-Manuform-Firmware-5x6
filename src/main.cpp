@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <PluggableUSBHID.h>
-#include <USBHID_Types.h>
+// #include <PluggableUSBHID.h>
+// #include <USBHID_Types.h>
 #include <USBKeyboard.h>
 
 #include "I2CKeyboard.h"
@@ -8,8 +8,8 @@
 // #include "DirectKeyboard.h"
 
 // Include the header file with all of the configuration options
-//  #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Left.h"
-#include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Right.h"
+ #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Left.h"
+// #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Right.h"
 
 // define history of keypresses
 bool currentState[MATRIX_WIDTH][MATRIX_HEIGHT];
@@ -29,7 +29,7 @@ void sendKeys(uint8_t modifier, uint8_t* keys);
   5                      // time is microseconds to wait between setting the pin
                          // voltage to high
                          // and reading the output value
-#define DEBOUNCE_US 200  // debounce time for combating false button presses
+#define DEBOUNCE_US 300  // debounce time for combating false button presses
 
 void setup() {
   pinMode(LED, OUTPUT);
