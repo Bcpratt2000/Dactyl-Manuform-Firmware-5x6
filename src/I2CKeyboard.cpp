@@ -28,24 +28,20 @@ I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
     }
   }
 
-  nextReportTime = micros();
-
   delay(1000);
 
-  // start I2C listerner on second core
-  // multicore_reset_core1();
-  // multicore_launch_core1(secondCoreListener);
+  nextReportTime = micros();
+
+  // Wire.onRequest(onRequest);
 }
 void I2CKeyboard::periodic() {
-  int key_cursor_incrementer = 0;
-
-  uint8_t modifier = 0;
-  uint8_t keys[MAX_KEYS];
-
-  unsigned long nextReportTime = micros();
-
-  nextReportTime = micros() + (1000000 / PULLING_HZ);
   if (micros() >= nextReportTime) {
+    nextReportTime = micros() + (1000000 / PULLING_HZ);
+    uint8_t modifier = 0;
+    uint8_t keys[MAX_KEYS] = {0};
+
+    // if this is the host device (address of 1), request the data
+    // from 2 and package it all up as an hid report and send it
     if (address == 1) {
       if (Wire.requestFrom(2, 1 + MAX_KEYS) == 1 + MAX_KEYS) {
         // read hid report and write it to the reports to go through
@@ -61,13 +57,23 @@ void I2CKeyboard::periodic() {
           Wire.read();  // clear buffer
         }
       }
-      for (int i = 0; i < MAX_KEYS; i++) {
-        if (keys[i] = !0) {
-          // compare both key lists and only take the first 6 keys if too
-          // many are pressed
+
+      // compare both key lists and only take the first 6 keys if too many
+      // are pressed
+      int key_cursor_incrementer = 0;
+      for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < MAX_KEYS; j++) {
+          if (peers[i + 1].keys[j] = !0) {
+            if (key_cursor_incrementer < MAX_KEYS) {
+              keys[i] = peers[i + 1].keys[j];
+              key_cursor_incrementer++;
+            }
+          }
         }
       }
+
       modifier = peers[address].modifier | peers[2].modifier;
+      // Serial.println(String(modifier));
       keyboard.keyboardReport(0, modifier, keys);
     }
   }
@@ -90,5 +96,9 @@ void I2CKeyboard::sendKeys(uint8_t submittedModifier, uint8_t* submittedKeys) {
   peers[address].modifier = submittedModifier;
   for (int i = 0; i < MAX_KEYS; i++) {
     peers[address].keys[i] = submittedKeys[i];
+    // if(submittedKeys[i]=!0){
+    //   Serial.println(String(submittedKeys[i]));
+    //   delay(10);
+    // }
   }
 }

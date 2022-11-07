@@ -2,7 +2,7 @@
 
 #include "I2CKeyboard.h"
 #include "KEYS.h"
-#include "arduino/hid/Adafruit_USBD_HID.h"
+// #include "arduino/hid/Adafruit_USBD_HID.h"
 
 // Include the header file with all of the configuration options
 //  #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Left.h"
@@ -16,10 +16,11 @@ uint8_t keyList[MAX_KEYS];
 uint8_t keysPressed = 0;
 uint8_t modifier = 0;
 
-Adafruit_USBD_HID keyboard;
-// I2CKeyboard keyboard(115200, I2C_ADDRESS);
+// Adafruit_USBD_HID keyboard;
+I2CKeyboard keyboard(100000, I2C_ADDRESS);
 // USBKeyboard keyboard;
 void sendKeys(uint8_t modifier, uint8_t* keys);
+void onRequest();
 
 uint8_t const desc_hid_report[] = {
     TUD_HID_REPORT_DESC_KEYBOARD(),
@@ -34,16 +35,20 @@ uint8_t const desc_hid_report[] = {
 #define DEBOUNCE_US 300  // debounce time for combating false button presses
 
 void setup() {
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, HIGH);
   // TinyUSB requires to run this in order to allow the computer to reset the
   // pico for uploading code
   Serial.begin(115200);
 
-  keyboard.setPollInterval(2);
-  keyboard.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
-  // keyboard.setReportCallback(NULL, hid_report_callback);
-  keyboard.begin();
+  // keyboard.setPollInterval(2);
+  // keyboard.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
+  // // keyboard.setReportCallback(NULL, hid_report_callback);
+  // keyboard.begin();
+  
+  
 
-  pinMode(LED, OUTPUT);
+  
 
   // set output and input pinmodes
   for (int i = 0; i < MATRIX_HEIGHT; i++) {
@@ -54,9 +59,11 @@ void setup() {
   }
 
   // wait for keyboard ready
-  digitalWrite(LED, HIGH);
   delay(1000);
+  Wire.onRequest(onRequest);
   digitalWrite(LED, LOW);
+  // Serial.println("finished setup");
+
 }
 
 // Entry Point
@@ -124,10 +131,21 @@ void loop() {
   } else {
     digitalWrite(LED, LOW);
   }
-  // keyboard.sendKeys(modifier, keyList);
-  sendKeys(modifier, keyList);
+  keyboard.sendKeys(modifier, keyList);
+  keyboard.periodic();
+  // sendKeys(modifier, keyList);
 }
 
-void sendKeys(uint8_t modifier, uint8_t* keys) {
-  keyboard.keyboardReport(0, modifier, keys);
+// void sendKeys(uint8_t modifier, uint8_t* keys) {
+//   keyboard.keyboardReport(0, modifier, keys);
+// }
+
+void onRequest(){
+  //reply to request with 
+  Wire.beginTransmission(1);
+  Wire.write(keyboard.peers[keyboard.address].modifier);
+  for(int i=0; i<MAX_KEYS; i++){
+    Wire.write(keyboard.peers[keyboard.address].keys[i]);
+  }
+  Wire.endTransmission();
 }
