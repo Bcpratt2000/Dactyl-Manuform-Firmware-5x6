@@ -1,4 +1,5 @@
 #include <Arduino.h>
+
 #include "I2CKeyboard.h"
 #include "KEYS.h"
 #include "arduino/hid/Adafruit_USBD_HID.h"
@@ -33,9 +34,9 @@ uint8_t const desc_hid_report[] = {
 #define DEBOUNCE_US 300  // debounce time for combating false button presses
 
 void setup() {
-  //TinyUSB requires to run this in order to allow the computer to reset the pico for uploading code
+  // TinyUSB requires to run this in order to allow the computer to reset the
+  // pico for uploading code
   Serial.begin(115200);
-
 
   keyboard.setPollInterval(2);
   keyboard.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));

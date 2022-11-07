@@ -29,15 +29,13 @@ class I2CKeyboard {
     uint8_t keys[MAX_KEYS];
   };
 
+  unsigned long nextReportTime;
 
   Adafruit_USBD_HID keyboard;
 
-  uint8_t modifier;
-  uint8_t keys[MAX_KEYS];
-
   // USBKeyboard keyboard;
   uint8_t address;
-  i2cPeer peers[128];
+  i2cPeer peers[128]();
 
   // void secondCoreListener();
 };

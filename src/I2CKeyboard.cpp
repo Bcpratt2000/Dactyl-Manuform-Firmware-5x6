@@ -7,7 +7,7 @@ I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
   Wire.setTimeout(10);
   Wire.begin(address);
 
-  //setup keyboard
+  // setup keyboard
   uint8_t desc_hid_report[] = {
       TUD_HID_REPORT_DESC_KEYBOARD(),
   };
@@ -17,17 +17,20 @@ I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
   // keyboard.setReportCallback(NULL, hid_report_callback);
   keyboard.begin();
 
-
   if (address == 1) {
     // initalize own peer
     peers[address].uniqueIdentifier = address;
     peers[address].modifier = 0;
     peers[address].isLayerDown = false;
     peers[address].isLayerUp = false;
-    for (int i = 0; i < sizeof(peers[address].keys) / sizeof(int); i++) {
+    for (int i = 0; i < MAX_KEYS; i++) {
       peers[address].keys[i] = 0;
     }
   }
+
+  nextReportTime = micros();
+
+  delay(1000);
 
   // start I2C listerner on second core
   // multicore_reset_core1();
@@ -36,41 +39,36 @@ I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
 void I2CKeyboard::periodic() {
   int key_cursor_incrementer = 0;
 
-  // HID_REPORT report;
+  uint8_t modifier = 0;
+  uint8_t keys[MAX_KEYS];
 
   unsigned long nextReportTime = micros();
 
-  while (true) {
-    nextReportTime = micros()+ (1000000 / PULLING_HZ);
-    if (micros() >= nextReportTime) {
-      if (address == 1) {
-        if (Wire.requestFrom(2, 3 + MAX_KEYS) == 3 + MAX_KEYS) {
-          // read hid report and write it to the reports to go through
+  nextReportTime = micros() + (1000000 / PULLING_HZ);
+  if (micros() >= nextReportTime) {
+    if (address == 1) {
+      if (Wire.requestFrom(2, 1 + MAX_KEYS) == 1 + MAX_KEYS) {
+        // read hid report and write it to the reports to go through
 
-          // report.length = 3 + MAX_KEYS;
+        peers[2].modifier = Wire.read();
 
-          // report.data[0] = 1;
-          // Wire.read();
-
-          // report.data[1] = modifier | Wire.read();
-
-          // report.data[2] = 0;
-          // Wire.read();
-
-          for (int i = 0; i < MAX_KEYS; i++) {
-            if (keys[i] = !0) {
-              // compare both key lists and only take the first 6 keys if too
-              // many are pressed
-            }
-          }
-
-        } else {
-          while (Wire.available()) {
-            Wire.read();  // clear buffer
-          }
+        for (int i = 0; i < MAX_KEYS; i++) {
+          peers[2].keys[i] = Wire.read();
         }
+
       } else {
+        while (Wire.available()) {
+          Wire.read();  // clear buffer
+        }
       }
+      for (int i = 0; i < MAX_KEYS; i++) {
+        if (keys[i] = !0) {
+          // compare both key lists and only take the first 6 keys if too
+          // many are pressed
+        }
+      }
+      modifier = peers[address].modifier | peers[2].modifier;
+      keyboard.keyboardReport(0, modifier, keys);
     }
   }
 }
@@ -89,8 +87,8 @@ void I2CKeyboard::sendKeys(uint8_t submittedModifier, uint8_t* submittedKeys) {
 
   // keyboard.send(&report);
 
-  this->modifier = modifier;
+  peers[address].modifier = submittedModifier;
   for (int i = 0; i < MAX_KEYS; i++) {
-    this->keys[i] = submittedKeys[i];
+    peers[address].keys[i] = submittedKeys[i];
   }
 }
