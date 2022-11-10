@@ -17,7 +17,7 @@ uint8_t keysPressed = 0;
 uint8_t modifier = 0;
 
 // Adafruit_USBD_HID keyboard;
-I2CKeyboard keyboard(100000, I2C_ADDRESS);
+I2CKeyboard keyboard;
 // USBKeyboard keyboard;
 void sendKeys(uint8_t modifier, uint8_t* keys);
 void onRequest();
@@ -37,18 +37,10 @@ uint8_t const desc_hid_report[] = {
 void setup() {
   pinMode(LED, OUTPUT);
   digitalWrite(LED, HIGH);
+
   // TinyUSB requires to run this in order to allow the computer to reset the
   // pico for uploading code
   Serial.begin(115200);
-
-  // keyboard.setPollInterval(2);
-  // keyboard.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
-  // // keyboard.setReportCallback(NULL, hid_report_callback);
-  // keyboard.begin();
-  
-  
-
-  
 
   // set output and input pinmodes
   for (int i = 0; i < MATRIX_HEIGHT; i++) {
@@ -57,13 +49,11 @@ void setup() {
   for (int i = 0; i < MATRIX_WIDTH; i++) {
     pinMode(inputPins[i], INPUT_PULLDOWN);
   }
-
-  // wait for keyboard ready
-  delay(1000);
   Wire.onRequest(onRequest);
   digitalWrite(LED, LOW);
-  // Serial.println("finished setup");
+  delay(100);
 
+  keyboard.begin(100000, I2C_ADDRESS);
 }
 
 // Entry Point
@@ -126,25 +116,15 @@ void loop() {
     digitalWrite(outputPins[i], LOW);
   }
 
-  if (keysPressed) {
-    digitalWrite(LED, HIGH);
-  } else {
-    digitalWrite(LED, LOW);
-  }
   keyboard.sendKeys(modifier, keyList);
   keyboard.periodic();
-  // sendKeys(modifier, keyList);
 }
 
-// void sendKeys(uint8_t modifier, uint8_t* keys) {
-//   keyboard.keyboardReport(0, modifier, keys);
-// }
-
-void onRequest(){
-  //reply to request with 
+void onRequest() {
+  // reply to request with
   Wire.beginTransmission(1);
   Wire.write(keyboard.peers[keyboard.address].modifier);
-  for(int i=0; i<MAX_KEYS; i++){
+  for (int i = 0; i < MAX_KEYS; i++) {
     Wire.write(keyboard.peers[keyboard.address].keys[i]);
   }
   Wire.endTransmission();

@@ -1,11 +1,19 @@
 #include "I2CKeyboard.h"
 
-I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
+I2CKeyboard::I2CKeyboard(){};
+
+void I2CKeyboard::begin(unsigned int bitrate, uint8_t address) {
+  digitalWrite(25, HIGH);
   this->address = address;
   Wire.setSDA(0);
   Wire.setSCL(1);
-  Wire.setTimeout(10);
-  Wire.begin(address);
+  Wire.setTimeout(1);
+  Wire.setClock(bitrate);
+  if (address == 1) {
+    Wire.begin();
+  } else {
+    Wire.begin(address);
+  }
 
   // setup keyboard
   uint8_t desc_hid_report[] = {
@@ -28,14 +36,16 @@ I2CKeyboard::I2CKeyboard(unsigned int bitrate, uint8_t address) {
     }
   }
 
+  nextReportTime = micros();
   delay(1000);
 
-  nextReportTime = micros();
-
   // Wire.onRequest(onRequest);
+  digitalWrite(25, LOW);
 }
+
 void I2CKeyboard::periodic() {
   if (micros() >= nextReportTime) {
+    // Wire.printf("Hello, World!");
     nextReportTime = micros() + (1000000 / PULLING_HZ);
     uint8_t modifier = 0;
     uint8_t keys[MAX_KEYS] = {0};
@@ -58,22 +68,25 @@ void I2CKeyboard::periodic() {
         }
       }
 
-      // compare both key lists and only take the first 6 keys if too many
+      // compare both key lists and only take the first MAX_KEYS if too many
       // are pressed
       int key_cursor_incrementer = 0;
       for (int i = 0; i < 2; i++) {
         for (int j = 0; j < MAX_KEYS; j++) {
-          if (peers[i + 1].keys[j] = !0) {
+          if (peers[i + 1].keys[j] != 0) {
             if (key_cursor_incrementer < MAX_KEYS) {
-              keys[i] = peers[i + 1].keys[j];
+              keys[key_cursor_incrementer] = peers[i + 1].keys[j];
               key_cursor_incrementer++;
             }
           }
         }
       }
-
+      if (key_cursor_incrementer) {
+        digitalWrite(25, HIGH);
+      } else {
+        digitalWrite(25, LOW);
+      }
       modifier = peers[address].modifier | peers[2].modifier;
-      // Serial.println(String(modifier));
       keyboard.keyboardReport(0, modifier, keys);
     }
   }
@@ -97,7 +110,6 @@ void I2CKeyboard::sendKeys(uint8_t submittedModifier, uint8_t* submittedKeys) {
   for (int i = 0; i < MAX_KEYS; i++) {
     peers[address].keys[i] = submittedKeys[i];
     // if(submittedKeys[i]=!0){
-    //   Serial.println(String(submittedKeys[i]));
     //   delay(10);
     // }
   }
