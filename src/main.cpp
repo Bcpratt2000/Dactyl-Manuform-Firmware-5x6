@@ -53,7 +53,7 @@ void setup() {
   digitalWrite(LED, LOW);
   delay(100);
 
-  keyboard.begin(100000, I2C_ADDRESS);
+  keyboard.begin(9600, I2C_ADDRESS);
 }
 
 // Entry Point

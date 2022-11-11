@@ -81,6 +81,7 @@ void I2CKeyboard::periodic() {
           }
         }
       }
+      //turn LED on if any keys are pressed
       if (key_cursor_incrementer) {
         digitalWrite(25, HIGH);
       } else {
@@ -93,24 +94,9 @@ void I2CKeyboard::periodic() {
 }
 
 void I2CKeyboard::sendKeys(uint8_t submittedModifier, uint8_t* submittedKeys) {
-  // HID_REPORT report;
-  // report.data[0] = 1;
-  // report.data[1] = modifier;
-  // report.data[2] = 0;
-
-  // for (int i = 0; i < MAX_KEYS; i++) {
-  //   report.data[3 + i] = keys[i];
-  // }
-
-  // report.length = 3 + MAX_KEYS;
-
-  // keyboard.send(&report);
 
   peers[address].modifier = submittedModifier;
   for (int i = 0; i < MAX_KEYS; i++) {
     peers[address].keys[i] = submittedKeys[i];
-    // if(submittedKeys[i]=!0){
-    //   delay(10);
-    // }
   }
 }
