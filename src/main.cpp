@@ -49,7 +49,7 @@ void setup() {
   for (int i = 0; i < MATRIX_WIDTH; i++) {
     pinMode(inputPins[i], INPUT_PULLDOWN);
   }
-  keyboard.begin(PIN_SDA, PIN_SCL, 300, I2C_ADDRESS);
+  keyboard.begin(PIN_SDA, PIN_SCL, 50000, I2C_ADDRESS);
   Wire.onRequest(requestEvent);
   digitalWrite(LED, LOW);
   delay(100);

@@ -20,6 +20,7 @@ void I2CKeyboard::begin(unsigned int pinSDA, unsigned int pinSCL, unsigned int b
       TUD_HID_REPORT_DESC_KEYBOARD(),
   };
 
+
   keyboard.setPollInterval(2);
   keyboard.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
   // keyboard.setReportCallback(NULL, hid_report_callback);
@@ -43,12 +44,15 @@ void I2CKeyboard::begin(unsigned int pinSDA, unsigned int pinSCL, unsigned int b
 
 void I2CKeyboard::periodic() {
   if (micros() >= nextReportTime) {
+    // Wire.beginTransmission(10);
+    // Wire.write("Hello, World");
+    // Wire.endTransmission();
     nextReportTime = micros() + (1000000 / PULLING_HZ);
     uint8_t modifier = 0;
     uint8_t keys[MAX_KEYS] = {0};
 
-    // if this is the host device (address of 1), request the data
-    // from 2 and package it all up as an hid report and send it
+    // if this is the host device (address of 9), request the data
+    // from 10 and package it all up as an hid report and send it
     if (address == 9) {
       if (Wire.requestFrom(10, 1 + MAX_KEYS) == 1 + MAX_KEYS) {
         // read hid report and write it to the reports to go through
