@@ -20,7 +20,7 @@ uint8_t modifier = 0;
 I2CKeyboard keyboard;
 // USBKeyboard keyboard;
 void sendKeys(uint8_t modifier, uint8_t* keys);
-void onRequest();
+void requestEvent();
 
 uint8_t const desc_hid_report[] = {
     TUD_HID_REPORT_DESC_KEYBOARD(),
@@ -49,11 +49,12 @@ void setup() {
   for (int i = 0; i < MATRIX_WIDTH; i++) {
     pinMode(inputPins[i], INPUT_PULLDOWN);
   }
-  Wire.onRequest(onRequest);
+  keyboard.begin(PIN_SDA, PIN_SCL, 300, I2C_ADDRESS);
+  Wire.onRequest(requestEvent);
   digitalWrite(LED, LOW);
   delay(100);
 
-  keyboard.begin(9600, I2C_ADDRESS);
+  
 }
 
 // Entry Point
@@ -120,12 +121,14 @@ void loop() {
   keyboard.periodic();
 }
 
-void onRequest() {
+void requestEvent() {
+  digitalWrite(LED, HIGH);
   // reply to request with
-  Wire.beginTransmission(1);
   Wire.write(keyboard.peers[keyboard.address].modifier);
-  for (int i = 0; i < MAX_KEYS; i++) {
-    Wire.write(keyboard.peers[keyboard.address].keys[i]);
-  }
-  Wire.endTransmission();
+  Wire.write(keyboard.peers[keyboard.address].keys, MAX_KEYS);
+  // for (int i = 0; i < MAX_KEYS; i++) {
+  //   Wire.write(keyboard.peers[keyboard.address].keys[i]);
+  // }
+  // delay(100);
+  digitalWrite(LED, LOW);
 }

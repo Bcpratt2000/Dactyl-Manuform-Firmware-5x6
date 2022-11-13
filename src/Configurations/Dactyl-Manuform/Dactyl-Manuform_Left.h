@@ -6,7 +6,10 @@
 #define MATRIX_HEIGHT 6
 #define MATRIX_WIDTH 6
 
-#define I2C_ADDRESS 2
+#define I2C_ADDRESS 10
+
+#define PIN_SDA 16
+#define PIN_SCL 17
 
 // define the pins used for the key matrix
 uint8_t inputPins[MATRIX_HEIGHT] = {2, 3, 4, 5, 6, 7};

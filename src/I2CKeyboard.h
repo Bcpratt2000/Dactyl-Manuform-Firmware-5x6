@@ -22,7 +22,7 @@ class I2CKeyboard {
     uint8_t modifier;
     uint8_t keys[MAX_KEYS];
   };
-  void begin(unsigned int bitrate, uint8_t address);
+  void begin(unsigned int pinSDA, unsigned int pinSCL, unsigned int bitrate, uint8_t address);
   I2CKeyboard();
   void sendKeys(uint8_t modifier, uint8_t* keys);
   void periodic();
