@@ -5,7 +5,7 @@
 // #include "arduino/hid/Adafruit_USBD_HID.h"
 
 // Include the header file with all of the configuration options
-//  #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Left.h"
+// #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Left.h"
 #include "Configurations/Dactyl-Manuform/Dactyl-Manuform_Right.h"
 
 // define history of keypresses
@@ -16,7 +16,9 @@ uint8_t keyList[MAX_KEYS];
 uint8_t keysPressed = 0;
 uint8_t modifier = 0;
 bool layerUpState = false;
+bool layerDownState = false;
 bool layerUpPressedThisRound = false;
+bool layerDownPressedThisRound = false;
 
 // Adafruit_USBD_HID keyboard;
 I2CKeyboard keyboard;
@@ -68,7 +70,7 @@ void loop() {
   keysPressed = 0;
   modifier = 0;
   layerUpPressedThisRound = false;
-
+  layerDownPressedThisRound = false;
   // loop through button array and send the button presses to the next part
   // through the debounceFirstCheckPresses array
   for (int i = 0; i < MATRIX_WIDTH; i++) {
@@ -109,10 +111,14 @@ void loop() {
           modifier |= 1 << 7;
         } else if (Keymap[i][j] == KEYS::LAYER_UP) {
           layerUpPressedThisRound = true;
+        } else if (Keymap[i][j] == KEYS::LAYER_DOWN) {
+          layerDownPressedThisRound = true;
         } else {
           if (keysPressed < MAX_KEYS) {
             if (layerUpState) {
               keyList[keysPressed] = Keymap_Layer_Up[i][j];
+            } else if (layerDownState) {
+              keyList[keysPressed] = Keymap_Layer_Down[i][j];
             } else {
               keyList[keysPressed] = Keymap[i][j];
             }
@@ -128,18 +134,18 @@ void loop() {
   } else {
     layerUpState = false;
   }
+  if (layerDownPressedThisRound) {
+    layerDownState = true;
+  } else {
+    layerDownState = false;
+  }
   keyboard.sendKeys(modifier, keyList);
   keyboard.periodic();
 }
 
 void requestEvent() {
   digitalWrite(LED, HIGH);
-  // reply to request with
+  // reply to request with the modifier and then an array of keys
   Wire.write(keyboard.peers[keyboard.address].modifier);
   Wire.write(keyboard.peers[keyboard.address].keys, MAX_KEYS);
-  // for (int i = 0; i < MAX_KEYS; i++) {
-  //   Wire.write(keyboard.peers[keyboard.address].keys[i]);
-  // }
-  // delay(100);
-  digitalWrite(LED, LOW);
 }

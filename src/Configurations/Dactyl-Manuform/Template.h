@@ -6,8 +6,10 @@
 #define MATRIX_HEIGHT 6
 #define MATRIX_WIDTH 6
 
+// define unique address for I2C interface
 #define I2C_ADDRESS 10
 
+// define pins to use for I2C0
 #define PIN_SDA 20
 #define PIN_SCL 21
 
@@ -15,6 +17,8 @@
 uint8_t inputPins[MATRIX_HEIGHT] = {2, 3, 4, 5, 6, 7};
 uint8_t outputPins[MATRIX_WIDTH] = {8, 9, 10, 11, 12, 13};
 
+
+// define keymap and layer shift keymaps, size needs to be the width and height of the matrix
 uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
     {KEYS::KEY_ESC, KEYS::KEY_1, KEYS::KEY_2, KEYS::KEY_3, KEYS::KEY_4,
      KEYS::KEY_5},
