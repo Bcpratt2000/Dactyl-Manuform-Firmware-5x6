@@ -15,6 +15,8 @@ uint8_t debounceFirstCheckPresses[MATRIX_WIDTH][MATRIX_HEIGHT];
 uint8_t keyList[MAX_KEYS];
 uint8_t keysPressed = 0;
 uint8_t modifier = 0;
+bool layerUpState = false;
+bool layerUpPressedThisRound = false;
 
 // Adafruit_USBD_HID keyboard;
 I2CKeyboard keyboard;
@@ -53,8 +55,6 @@ void setup() {
   Wire.onRequest(requestEvent);
   digitalWrite(LED, LOW);
   delay(100);
-
-  
 }
 
 // Entry Point
@@ -67,6 +67,7 @@ void loop() {
   // zero counter of keys pressed and modifier bitmask
   keysPressed = 0;
   modifier = 0;
+  layerUpPressedThisRound = false;
 
   // loop through button array and send the button presses to the next part
   // through the debounceFirstCheckPresses array
@@ -106,9 +107,15 @@ void loop() {
           modifier |= 1 << 6;
         } else if (Keymap[i][j] == KEYS::KEY_RLOGO) {
           modifier |= 1 << 7;
+        } else if (Keymap[i][j] == KEYS::LAYER_UP) {
+          layerUpPressedThisRound = true;
         } else {
           if (keysPressed < MAX_KEYS) {
-            keyList[keysPressed] = Keymap[i][j];
+            if (layerUpState) {
+              keyList[keysPressed] = Keymap_Layer_Up[i][j];
+            } else {
+              keyList[keysPressed] = Keymap[i][j];
+            }
             keysPressed++;
           }
         }
@@ -116,7 +123,11 @@ void loop() {
     }
     digitalWrite(outputPins[i], LOW);
   }
-
+  if (layerUpPressedThisRound) {
+    layerUpState = true;
+  } else {
+    layerUpState = false;
+  }
   keyboard.sendKeys(modifier, keyList);
   keyboard.periodic();
 }
