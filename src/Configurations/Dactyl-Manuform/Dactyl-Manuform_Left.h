@@ -12,7 +12,7 @@
 #define PIN_SCL 21
 
 // define the pins used for the key matrix
-uint8_t inputPins[MATRIX_HEIGHT] = {2, 3, 4, 5, 6, 7};
+uint8_t inputPins[MATRIX_HEIGHT] = {14, 3, 4, 5, 6, 7};
 uint8_t outputPins[MATRIX_WIDTH] = {8, 9, 10, 11, 12, 13};
 
 uint8_t Keymap[MATRIX_WIDTH][MATRIX_HEIGHT] = {
